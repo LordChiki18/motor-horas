@@ -102,6 +102,14 @@ describe('tolerancias', () => {
     expect(r.minutos.ordinariasDiurnas).toBe(480)
   })
 
+  it('atraso en el límite de la tolerancia: no descuenta y paga la jornada completa', () => {
+    const r = calcularJornada(jornada({ entrada: '08:10', salida: '17:00' }), FRIGORIFICO)
+
+    expect(r.minutos.descuento).toBe(0)
+    expect(r.minutos.ordinariasDiurnas).toBe(480)
+    expect(r.total).toBe(100_000)
+  })
+
   it('atraso fuera de la tolerancia: descuenta el atraso completo', () => {
     const r = calcularJornada(jornada({ entrada: '08:25', salida: '17:00' }))
 

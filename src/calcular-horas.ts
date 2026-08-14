@@ -144,7 +144,7 @@ export function calcularJornada(
   const atraso = entrada - inicioTurno
 
   if (atraso > 0) {
-    if (atraso < cfg.toleranciaEntradaMinutos) {
+    if (atraso <= cfg.toleranciaEntradaMinutos) {
       tmp = inicioTurno
       detalle.push(`Atraso de ${atraso} min dentro de la tolerancia (${cfg.toleranciaEntradaMinutos} min).`)
     } else {
