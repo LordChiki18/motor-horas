@@ -164,6 +164,22 @@ describe('feriados', () => {
     expect(r.minutos.ordinariasDiurnas).toBe(0)
     expect(r.total).toBe(200_000)
   })
+
+  it('turno entre dos fechas: clasifica como feriado solo los minutos posteriores a medianoche', () => {
+    const caso = jornada({
+      fecha: '2026-04-30',
+      turno: { nombre: 'Nocturno 22-06', inicio: '22:00', fin: '06:00' },
+      entrada: '22:00',
+      salida: '06:00',
+    })
+    caso.marcacion.salida = '2026-05-01T06:00'
+
+    const r = calcularJornada(caso, FRIGORIFICO)
+
+    expect(r.esFeriado).toBe(true)
+    expect(r.minutos.ordinariasNocturnas).toBe(120)
+    expect(r.minutos.feriadoNocturno).toBe(360)
+  })
 })
 
 describe('forma de pago', () => {
