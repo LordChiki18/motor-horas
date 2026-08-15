@@ -217,9 +217,15 @@ export function calcularJornada(
   // ------------------------------------------------------------------
   // 5) Feriado.
   // ------------------------------------------------------------------
-  const esFeriado = calendario.esFeriado(jornada.fecha)
-  if (esFeriado) {
-    detalle.push(`${jornada.fecha} es feriado (${calendario.nombre(jornada.fecha)}).`)
+  const fechasFeriado = new Set<string>()
+  for (const b of bloques) {
+    const fechaAplicable = cfg.dividirTurnoPorMedianoche ? b.fecha : jornada.fecha
+    if (calendario.esFeriado(fechaAplicable)) fechasFeriado.add(fechaAplicable)
+  }
+
+  const esFeriado = fechasFeriado.size > 0
+  for (const fecha of fechasFeriado) {
+    detalle.push(`${fecha} es feriado (${calendario.nombre(fecha)}).`)
   }
 
   // ------------------------------------------------------------------
@@ -256,8 +262,9 @@ export function calcularJornada(
     let restante = duracion(b)
     if (restante <= 0) continue
     const valorMinuto = b.nocturno ? valorMinutoNocturno : valorMinutoDiurno
+    const fechaAplicable = cfg.dividirTurnoPorMedianoche ? b.fecha : jornada.fecha
 
-    if (esFeriado) {
+    if (fechasFeriado.has(fechaAplicable)) {
       // En feriado no se separan ordinarias de extras: todo el tiempo del día
       // se paga como feriado, con el recargo del feriado.
       if (b.nocturno) {
