@@ -223,24 +223,19 @@ export function calcularJornada(
   }
 
   // ------------------------------------------------------------------
-  // 6) Valor de la hora.
-  //    El divisor legal de la jornada: 8 para la diurna, 7 para la nocturna.
+  // 6) Valor de la hora por bloque.
+  //    El divisor legal es 8 para el bloque diurno y 7 para el nocturno.
   // ------------------------------------------------------------------
   const jornal =
     jornada.colaborador.formaPago === 'mensual'
       ? jornada.colaborador.salarioBase / cfg.diasMes
       : jornada.colaborador.salarioBase
 
-  const arrancaDeNoche = esMinutoNocturno(
-    ((inicioComputado % MINUTOS_POR_DIA) + MINUTOS_POR_DIA) % MINUTOS_POR_DIA,
-    minutosDelDia(cfg.inicioNocturno),
-    minutosDelDia(cfg.finNocturno),
-  )
-  const divisorJornada = arrancaDeNoche ? cfg.divisorNocturno : cfg.divisorDiurno
-  const valorMinuto = jornal / divisorJornada / 60
+  const valorMinutoDiurno = jornal / cfg.divisorDiurno / 60
+  const valorMinutoNocturno = jornal / cfg.divisorNocturno / 60
 
   detalle.push(
-    `Jornal ${Math.round(jornal)} G$ · divisor ${divisorJornada} · valor minuto ${valorMinuto.toFixed(2)} G$.`,
+    `Jornal ${Math.round(jornal)} G$ · minuto diurno ${valorMinutoDiurno.toFixed(2)} G$ · nocturno ${valorMinutoNocturno.toFixed(2)} G$.`,
   )
 
   // ------------------------------------------------------------------
@@ -260,6 +255,7 @@ export function calcularJornada(
   for (const b of bloques) {
     let restante = duracion(b)
     if (restante <= 0) continue
+    const valorMinuto = b.nocturno ? valorMinutoNocturno : valorMinutoDiurno
 
     if (esFeriado) {
       // En feriado no se separan ordinarias de extras: todo el tiempo del día
