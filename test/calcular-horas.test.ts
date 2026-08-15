@@ -145,6 +145,14 @@ describe('nocturnidad', () => {
     expect(r.minutos.extrasDiurnas).toBe(0)
     expect(r.minutos.extrasNocturnas).toBe(0)
   })
+
+  it('turno mixto: calcula cada bloque pagado con su propio divisor', () => {
+    const r = calcularJornada(jornada({ turno: TURNO_TARDE, entrada: '14:00', salida: '23:00' }))
+
+    expect(r.valores.ordinariasDiurnas).toBe(75_000)
+    expect(r.valores.ordinariasNocturnas).toBe(55_714)
+    expect(r.total).toBe(130_714)
+  })
 })
 
 describe('feriados', () => {
