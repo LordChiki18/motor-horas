@@ -155,6 +155,79 @@ describe('nocturnidad', () => {
   })
 })
 
+describe('Resolución 118/2026', () => {
+  const EMPRESA_ADHERIDA = {
+    ...FRIGORIFICO,
+    resolucion118: { vigenteDesde: '2026-10-01' },
+  }
+
+  it('empresa adherida: aplica el recargo nocturno del 40% desde la fecha de vigencia inclusive', () => {
+    const r = calcularJornada(
+      jornada({
+        fecha: '2026-10-01',
+        turno: TURNO_VIGILANCIA,
+        entrada: '20:00',
+        salida: '23:00',
+      }),
+      EMPRESA_ADHERIDA,
+    )
+
+    expect(r.minutos.ordinariasNocturnas).toBe(180)
+    expect(r.valores.ordinariasNocturnas).toBe(60_000)
+    expect(r.total).toBe(60_000)
+  })
+
+  it('empresa no adherida: conserva el recargo nocturno anterior después de la vigencia', () => {
+    const r = calcularJornada(
+      jornada({
+        fecha: '2026-10-05',
+        turno: TURNO_VIGILANCIA,
+        entrada: '20:00',
+        salida: '23:00',
+      }),
+      FRIGORIFICO,
+    )
+
+    expect(r.minutos.ordinariasNocturnas).toBe(180)
+    expect(r.valores.ordinariasNocturnas).toBe(55_714)
+    expect(r.total).toBe(55_714)
+  })
+
+  it('empresa adherida: conserva el recargo nocturno anterior antes de la vigencia', () => {
+    const r = calcularJornada(
+      jornada({
+        fecha: '2026-09-30',
+        turno: TURNO_VIGILANCIA,
+        entrada: '20:00',
+        salida: '23:00',
+      }),
+      EMPRESA_ADHERIDA,
+    )
+
+    expect(r.minutos.ordinariasNocturnas).toBe(180)
+    expect(r.valores.ordinariasNocturnas).toBe(55_714)
+    expect(r.total).toBe(55_714)
+  })
+
+  it('empresa adherida: integra el 40% nocturno en la base de la hora extra', () => {
+    const r = calcularJornada(
+      jornada({
+        fecha: '2026-10-05',
+        turno: { nombre: 'Nocturno 20-21', inicio: '20:00', fin: '21:00' },
+        entrada: '20:00',
+        salida: '22:00',
+      }),
+      EMPRESA_ADHERIDA,
+    )
+
+    expect(r.minutos.ordinariasNocturnas).toBe(60)
+    expect(r.minutos.extrasNocturnas).toBe(60)
+    expect(r.valores.ordinariasNocturnas).toBe(20_000)
+    expect(r.valores.extrasNocturnas).toBe(40_000)
+    expect(r.total).toBe(60_000)
+  })
+})
+
 describe('feriados', () => {
   it('día feriado: todo el tiempo trabajado se paga como feriado, al doble', () => {
     const r = calcularJornada(jornada({ fecha: FERIADO, entrada: '08:00', salida: '17:00' }))

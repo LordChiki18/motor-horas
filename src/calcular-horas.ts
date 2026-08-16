@@ -38,6 +38,8 @@ interface Bloque extends Rango {
   fecha: string
 }
 
+const RECARGO_NOCTURNO_RESOLUCION_118 = 0.4
+
 const CERO_MINUTOS: MinutosPorCategoria = {
   ordinariasDiurnas: 0,
   ordinariasNocturnas: 0,
@@ -122,6 +124,15 @@ export function calcularJornada(
   const detalle: string[] = []
   const min: MinutosPorCategoria = { ...CERO_MINUTOS }
   const val: ValoresPorCategoria = { ...CERO_VALORES }
+  const vigenteDesdeResolucion118 = cfg.resolucion118?.vigenteDesde
+  const aplicaResolucion118 =
+    vigenteDesdeResolucion118 !== undefined && jornada.fecha >= vigenteDesdeResolucion118
+
+  if (aplicaResolucion118) {
+    detalle.push(
+      `Resolución 118/2026 vigente desde ${vigenteDesdeResolucion118}: régimen nocturno del 40%.`,
+    )
+  }
 
   const entrada = aAbsolutos(jornada.marcacion.entrada)
   const salida = aAbsolutos(jornada.marcacion.salida)
@@ -283,7 +294,10 @@ export function calcularJornada(
       restante -= ordinarias
       if (b.nocturno) {
         min.ordinariasNocturnas += ordinarias
-        val.ordinariasNocturnas += ordinarias * valorMinuto * (1 + cfg.recargoNocturno)
+        val.ordinariasNocturnas +=
+          ordinarias *
+          valorMinuto *
+          (aplicaResolucion118 ? 1 + RECARGO_NOCTURNO_RESOLUCION_118 : 1 + cfg.recargoNocturno)
       } else {
         min.ordinariasDiurnas += ordinarias
         val.ordinariasDiurnas += ordinarias * valorMinuto
@@ -299,7 +313,12 @@ export function calcularJornada(
       if (extras > 0) {
         if (b.nocturno) {
           min.extrasNocturnas += extras
-          val.extrasNocturnas += extras * valorMinuto * (1 + cfg.recargoExtraNocturna)
+          val.extrasNocturnas +=
+            extras *
+            valorMinuto *
+            (aplicaResolucion118
+              ? (1 + RECARGO_NOCTURNO_RESOLUCION_118) * (1 + cfg.recargoExtraNocturna)
+              : 1 + cfg.recargoExtraNocturna)
         } else {
           min.extrasDiurnas += extras
           val.extrasDiurnas += extras * valorMinuto * (1 + cfg.recargoExtraDiurna)

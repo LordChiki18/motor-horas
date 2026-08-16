@@ -4,8 +4,12 @@
  * Cada empresa tiene su propio reglamento interno y el motor lo respeta. Eso
  * significa que el mismo turno, con la misma marcación, puede liquidarse
  * distinto en dos clientes. Es la parte del producto que más caminos genera:
- * acá hay 18 campos; en el sistema real son cientos.
+ * acá hay 18 campos base y una adhesión normativa opcional; en el sistema real son cientos.
  */
+
+export interface AdhesionResolucion118 {
+  vigenteDesde: string
+}
 
 export interface ConfigEmpresa {
   nombre: string
@@ -41,6 +45,9 @@ export interface ConfigEmpresa {
   recargoExtraDiurna: number
   recargoExtraNocturna: number
   recargoFeriado: number
+
+  /** Adhesión voluntaria al régimen nocturno de la Resolución 118/2026. */
+  resolucion118?: AdhesionResolucion118
 
   /**
    * Si está en `true`, el turno que cruza la medianoche se parte en dos y cada

@@ -19,7 +19,7 @@ Tres o cuatro líneas. Lo que tocaste, en el orden en que lo tocaste.
 Qué decidiste **no** hacer, y con qué criterio. Si tuvieras tres horas más, ¿qué harías primero?
 No hace falta que nos digas cuánto tardaste: decinos qué quedó afuera y por qué, que es lo que de verdad nos sirve.
 
--
+- Para la Resolución 118 elegí cuatro casos que cubren adhesión, no adhesión, vigencia inclusiva, compatibilidad histórica y base multiplicativa de la extra nocturna. Dejé deliberadamente afuera los turnos que cruzan la fecha de vigencia, las combinaciones con feriados, los jornaleros y las ventanas nocturnas personalizadas para priorizar el riesgo contractual; con tres horas más investigaría primero el turno que cruza la vigencia y la hipótesis del intervalo nocturno.
 
 ---
 
